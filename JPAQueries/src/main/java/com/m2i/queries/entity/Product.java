@@ -33,8 +33,6 @@ public class Product {
 		this.name = f.app().name();
 		this.quantity = f.number().numberBetween(1, 100);
 		this.price = f.number().numberBetween(10, 1000);
-		
-	
 	}
 	
 	

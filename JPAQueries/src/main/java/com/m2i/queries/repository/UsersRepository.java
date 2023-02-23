@@ -21,7 +21,6 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 
 	List<Users> findByEmailContaining(String email);
 	
-	
 	Page<Users> findAll(Pageable p);
 	
 	
