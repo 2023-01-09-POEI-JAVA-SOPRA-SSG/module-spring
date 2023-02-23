@@ -1,5 +1,7 @@
 package com.m2i.JPAMessenger.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.javafaker.Faker;
 import com.m2i.JPAMessenger.entity.Message;
+import com.m2i.JPAMessenger.model.Content;
 import com.m2i.JPAMessenger.repository.MessageRepository;
 import com.m2i.JPAMessenger.service.MessageService;
 
@@ -45,6 +48,28 @@ public class MessageController {
 	public Page<Message> getAll(@PathVariable("page") int page, @PathVariable("size") int size, @RequestParam("emailDest") String emailDest){
 		return service.findDestEmailWithPagination(page, size, emailDest);
 		
+	}
+	
+	
+    //6 Récupérer tout les message du emailDestinataire 'toto'
+	@GetMapping("/toto")
+	public List<Message> getAllMessageFromToto(){
+		return repo.findByEmailDest();
+	}
+	
+	
+	
+    //7 Récupérer une liste de String de tout les contenues de messages;
+	@GetMapping("/contentString")
+	public List<String> getAllContent(){
+		return repo.findContent();
+	}
+	
+	
+    //8 Récupérer une liste contenant les attributs content et date de tout les messages
+	@GetMapping("/content")
+	public List<Content> getAllMessageContent(){
+		return repo.getDateAndContent();
 	}
 	
 }

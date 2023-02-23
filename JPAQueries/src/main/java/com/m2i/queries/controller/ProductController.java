@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,6 +58,17 @@ public class ProductController {
 	@GetMapping("/getAll")
 	public List<Product> getAll(){
 		return repo.findAll();
+	}
+	
+	
+	@GetMapping("/count")
+	public Integer getCount() {
+		return repo.getProductCount();
+	}
+	
+	@GetMapping("/priceover/{price}")
+	public List<Product> priceOver(@PathVariable("price") int price){
+		return repo.getProductWherePriceOver(price);
 	}
 	
 	

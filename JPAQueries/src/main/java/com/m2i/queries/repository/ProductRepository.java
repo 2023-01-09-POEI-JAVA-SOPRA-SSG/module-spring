@@ -19,7 +19,17 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
 	@Query(value = "SELECT p.name FROM Product p")
 	List<String> getProductNameList();
 	
+	@Query(value = "SELECT COUNT(p) FROM Product p")
+	Integer getProductCount();
+	
 //	@Query(value = "SELECT name, price FROM Product", nativeQuery = true)	
 	@Query(value = "SELECT new com.m2i.queries.model.ProductNamePrice(p.name, p.price) FROM Product p")
 	List<ProductNamePrice> getProductNameAndPriceList();
+	
+	
+	@Query(value = "SELECT p FROM Product p WHERE p.price > ?1")
+	List<Product> getProductWherePriceOver(int price);
+	
+	
+	
 }

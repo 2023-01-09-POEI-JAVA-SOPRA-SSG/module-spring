@@ -1,5 +1,6 @@
 package com.m2i.queries.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -39,7 +40,7 @@ public class Users {
 	public Users(Faker f) {
 				
 		this.name = f.name().fullName();
-		
+		this.products = new ArrayList<>();
 		this.email = f.internet().emailAddress();
 	}
 	
