@@ -39,10 +39,7 @@ public class UsersService {
 	
 	public Page<Users> findAllWithPagination(int page, int nombre){
 		Sort sort = Sort.by("email").ascending();
-
 		Pageable pageable = PageRequest.of(page, nombre, sort);
-		
-		
 		
 		return userRepo.findAll( pageable );
 	}
