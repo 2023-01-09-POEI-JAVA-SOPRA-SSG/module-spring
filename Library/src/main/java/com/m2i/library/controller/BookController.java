@@ -36,5 +36,13 @@ public class BookController {
 		return bRepo.findAll(PageRequest.of(page, size, Sort.by("title").ascending()));
 	}
 	
+	// 6. localhost:8080/book/vente/{quantity} -> Renvoie tout les livres ayant plus de 'quantity' ventes 
+	@GetMapping("/ventes/{quantity}")
+	public List<Book> getBestSellers(@PathVariable("quantity") int quantity){
+		return bRepo.findByVentesGreaterThan(quantity);
+	}
+	
+
+	
 	
 }
