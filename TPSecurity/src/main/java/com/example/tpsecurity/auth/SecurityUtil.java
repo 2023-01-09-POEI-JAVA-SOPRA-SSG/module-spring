@@ -9,6 +9,7 @@ import com.example.tpsecurity.entity.Users;
 import com.example.tpsecurity.model.Credential;
 import com.example.tpsecurity.repository.UsersRepository;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -29,9 +30,10 @@ public class SecurityUtil {
 	public Users getUserByCredentials(Credential credential) {
 		
 		return userRepo.findByEmailAndPassword( 
-				credential.getEmail(),
-				encodePassword( credential.getPassword() )
-				).orElse(null);
+					credential.getEmail(),
+					encodePassword( credential.getPassword() )
+				)
+				.orElse(null);
 	}
 	
 	public String createToken(Users user) {
@@ -44,6 +46,55 @@ public class SecurityUtil {
 				.signWith( SignatureAlgorithm.HS512, SECRET_TOKEN )
 				.compact();
 	}
+
+	public boolean isValidToken(String bearerToken) {
+		try {
+			String token = getTokenFromBearerToken(bearerToken);
+			Jwts.parser().setSigningKey(SECRET_TOKEN).parseClaimsJws(token);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public String getTokenFromBearerToken(String bearerToken) throws Exception {
+		
+		if ( bearerToken.startsWith("Bearer ") ) {
+			return bearerToken.split(" ")[1];
+		}
+		
+		throw new Exception("INVALID TOKEN");
+	}
+
+	public Users getUserFromToken(String bearerToken) {
+		try {
+			String token = getTokenFromBearerToken(bearerToken);
+			String email = getSubject(token);
+			Users user = userRepo.findByEmail(email).orElseThrow();
+			
+			return user;
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	public String getSubject(String token) {
+		return parseClaims(token).getSubject();
+	}
+	
+	public Claims parseClaims(String token) {
+		return Jwts.parser()
+				.setSigningKey(SECRET_TOKEN)
+				.parseClaimsJws(token)
+				.getBody();
+	}
+	
+	
 	
 	
 	
