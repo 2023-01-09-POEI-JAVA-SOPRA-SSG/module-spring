@@ -2,6 +2,7 @@ package com.example.tpsecurity.entity;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,18 +34,10 @@ public class Users {
 
 	private String lastName;
 	
+	@Column(unique = true)
 	private String email;
 
 	private String password;
-
-	@JsonIgnore
-	@ManyToMany(targetEntity = Role.class)
-	@JoinTable(
-			name="user_role",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id")
-			)
-	private List<Role> roles;
 
 	@JsonIgnore
 	@ManyToMany(targetEntity = Product.class)

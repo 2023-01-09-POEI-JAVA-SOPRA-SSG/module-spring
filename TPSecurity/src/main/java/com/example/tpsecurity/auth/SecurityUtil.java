@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.tpsecurity.entity.Users;
 import com.example.tpsecurity.model.Credential;
+import com.example.tpsecurity.repository.RoleRepository;
 import com.example.tpsecurity.repository.UsersRepository;
 
 import io.jsonwebtoken.Claims;
@@ -18,6 +19,11 @@ public class SecurityUtil {
 
 	@Autowired
 	UsersRepository userRepo;
+	
+	@Autowired
+	RoleRepository roleRepo;
+	
+	
 	
 	private final String SECRET_TOKEN = "token-super-secret";
 	private final Long EXPIRATION_DATE = (long) (15 * 60 * 1000);
@@ -93,6 +99,21 @@ public class SecurityUtil {
 				.parseClaimsJws(token)
 				.getBody();
 	}
+	
+	public boolean canAcces(String bearerToken, String role) {
+		String token;
+		try {
+			token = getTokenFromBearerToken(bearerToken);
+			String email = getSubject(token);
+			return roleRepo.findRoleByEmailAndType(email, role).isPresent();
+		} catch (Exception e) {
+			return false;
+		}
+		
+	}
+	
+	
+	
 	
 	
 	
