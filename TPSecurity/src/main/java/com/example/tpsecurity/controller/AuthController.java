@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tpsecurity.auth.SecurityUtil;
 import com.example.tpsecurity.entity.Users;
+import com.example.tpsecurity.model.Credential;
 import com.example.tpsecurity.repository.UsersRepository;
 
 @RestController
@@ -30,9 +31,13 @@ public class AuthController {
 	
 	
 	@GetMapping("/login")
-	public String login() {
+	public String login(@RequestBody Credential credential) {
+		Users u = securityUtil.getUserByCredentials(credential);
 		
-		return null;
+		if (u != null) {
+			return securityUtil.createToken(u);
+		}
+		return "BAD CREDENTIALS";
 	}
 	
 }
