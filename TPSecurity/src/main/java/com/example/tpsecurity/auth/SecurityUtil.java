@@ -3,6 +3,7 @@ package com.example.tpsecurity.auth;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.example.tpsecurity.entity.Users;
@@ -24,9 +25,11 @@ public class SecurityUtil {
 	RoleRepository roleRepo;
 	
 	
+	@Value("${secu.jwt.secret}")
+	private String SECRET_TOKEN;
 	
-	private final String SECRET_TOKEN = "token-super-secret";
-	private final Long EXPIRATION_DATE = (long) (15 * 60 * 1000);
+	@Value("${secu.jwt.expiration}")
+	private Long EXPIRATION_DATE;
 	
 	
 	public String encodePassword(String password) {
@@ -69,6 +72,8 @@ public class SecurityUtil {
 		if ( bearerToken.startsWith("Bearer ") ) {
 			return bearerToken.split(" ")[1];
 		}
+		
+		
 		
 		throw new Exception("INVALID TOKEN");
 	}

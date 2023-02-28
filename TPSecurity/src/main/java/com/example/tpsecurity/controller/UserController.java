@@ -3,14 +3,12 @@ package com.example.tpsecurity.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,17 +45,14 @@ public class UserController {
 	//     La route GET permet de récupérer tout vos produits
 	
 	@GetMapping("/product")
-	public List<Product> getUserProducts( @RequestAttribute("toto") String myAttribute){
-		
-		System.out.println(myAttribute);
-		
-		return null;//securityUtil.getUserFromToken(token).getProducts();
+	public List<Product> getUserProducts( @RequestAttribute("email") String email){
+		return uRepo.findByEmail(email).orElse(null).getProducts();
 	}
 	
 	//    La route POST permet d'ajouter un produit à votre liste
 	@PostMapping("/product")
-	public Product addUserProducts(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token, @RequestBody Product product ) {
-		Users u = securityUtil.getUserFromToken(token);
+	public Product addUserProducts( @RequestAttribute("email") String email, @RequestBody Product product ) {
+		Users u = uRepo.findByEmail(email).orElse(null);
 		if (u != null) {
 			pRepo.save(product);
 			u.getProducts().add(product);
@@ -70,9 +65,9 @@ public class UserController {
     //La route PUT permet de modifier vos informations utilisateur
     //La route PUT permet de modifier vos informations utilisateur
 	@PutMapping
-	public Users updateUser(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token,@RequestBody Users u) {
+	public Users updateUser( @RequestAttribute("email") String email,@RequestBody Users u) {
 		
-		Users user = securityUtil.getUserFromToken(token);
+		Users user = uRepo.findByEmail(email).orElse(null);
 		
 		if (user != null) {
 			user.setEmail( u.getEmail() );
@@ -83,16 +78,13 @@ public class UserController {
 			uRepo.save(user);
 			return u;
 		}
-		
-
 		return null;
 	}
-	
     //La route DELETE supprime votre compte (et donc vous ne pouvez plus faire de requêtes)
 	@DeleteMapping
-	public boolean deleteUser(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+	public boolean deleteUser( @RequestAttribute("email") String email) {
 		
-		Users u = securityUtil.getUserFromToken(token);
+		Users u = uRepo.findByEmail(email).orElse(null);
 		if (u != null) {
 			uRepo.delete(u);
 			return true;

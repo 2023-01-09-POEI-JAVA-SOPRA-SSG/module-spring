@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.example.tpsecurity.auth.filter.AdminFilter;
 import com.example.tpsecurity.auth.filter.UserFilter;
-import com.example.tpsecurity.controller.UserController;
 
 @Configuration
 public class AppConfig {

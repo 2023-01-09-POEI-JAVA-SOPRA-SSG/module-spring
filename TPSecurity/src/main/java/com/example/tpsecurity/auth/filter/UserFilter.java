@@ -37,8 +37,12 @@ public class UserFilter implements Filter {
 		if ( !securityUtil.isValidToken(token) || !securityUtil.canAcces(token, "USER")) {
 			throw new ServletException();
 		}
-		
-		request.setAttribute("user", "Hello from filter");
+
+		try {
+			request.setAttribute("email", securityUtil.getSubject(securityUtil.getTokenFromBearerToken(token)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		
 		System.out.println("THIS IS USER ROUTE");
