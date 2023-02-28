@@ -101,7 +101,7 @@ public class SecurityUtil {
 	}
 	
 	public boolean canAcces(String bearerToken, String role) {
-		String token;
+		String token;		
 		try {
 			token = getTokenFromBearerToken(bearerToken);
 			String email = getSubject(token);

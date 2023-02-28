@@ -34,42 +34,30 @@ public class AdminController {
 	
 	//    La route GET récupère tout les utilisateurs
     @GetMapping("/getuser")
-	public List<Users> getAllUsers(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token ){
+	public List<Users> getAllUsers(){
     	
-    	if (securityUtil.isValidToken(token) && securityUtil.canAcces(token, "ADMIN")) {
-    		return uRepo.findAll();
-    	}
-    	return null;
+		return uRepo.findAll();
     }
 	
 	//    La route POST permet d'ajouter des rôles à un utilisateur
     @PostMapping("/role/{id_user}/{id_role}")
-    public boolean addRole(
-    		@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token, 
+    public void addRole(
     		@PathVariable("id_user") int idUser,
     		@PathVariable("id_role") int idRole) {
     	
-    	if (securityUtil.isValidToken(token) && securityUtil.canAcces(token, "ADMIN")) {
-    		Users u = uRepo.findById(idUser).orElse(null);
-    		Role r = rRepo.findById(idRole).orElse(null);
-    		r.getUsers().add(u);
-    		rRepo.save(r);
-    		return true;
-    	}
-    	return false;
+		Users u = uRepo.findById(idUser).orElse(null);
+		Role r = rRepo.findById(idRole).orElse(null);
+		r.getUsers().add(u);
+		rRepo.save(r);
     }
     
     //    La route DELETE supprime un utilisateur
     @DeleteMapping("/delete/{id}")
-    public boolean deleteAccount(
-    		@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token, 
+    public void deleteAccount(
        		@PathVariable("id") int idUser) {
     	
-    	if( securityUtil.isValidToken(token) && securityUtil.canAcces(token, "ADMIN")) {
-    		Users u = uRepo.findById(idUser).orElse(null);
-    		uRepo.delete(u);
-    		return true;
-    	}
-    	return false;
+		Users u = uRepo.findById(idUser).orElse(null);
+		uRepo.delete(u);
+
     }
 }
