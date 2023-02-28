@@ -74,10 +74,15 @@ public class UserController {
 	}
 	
     //La route PUT permet de modifier vos informations utilisateur
+    //La route PUT permet de modifier vos informations utilisateur
 	@PutMapping
 	public Users updateUser(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token,@RequestBody Users u) {
 		
-		if (securityUtil.isValidToken(token) && securityUtil.canAcces(token, "USER")) {
+		if (securityUtil.isValidToken(token) && 
+				(securityUtil.canAcces(token, "USER") || 
+				 securityUtil.canAcces(token, "ADMIN")
+		    )) {
+			
 			Users user = securityUtil.getUserFromToken(token);
 			
 			if (user != null) {
