@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,39 +37,32 @@ public class UserController {
 	
 	
 	@GetMapping("/hello")
-	public String helloWorld(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+	public String helloWorld() {
 				
-		if (securityUtil.isValidToken(token) && securityUtil.getUserFromToken(token) != null) {
-			return "Hello World";
-		}
-		return "BAD TOKEN";
+		return "Hello World";
+		
 	}
 	
 	
 	//     La route GET permet de récupérer tout vos produits
 	
 	@GetMapping("/product")
-	public List<Product> getUserProducts( @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token ){
-		if( securityUtil.isValidToken(token) && securityUtil.canAcces(token, "USER")) {
-			Users u = securityUtil.getUserFromToken(token);
-			if ( u != null) {
-				return u.getProducts();
-			}
-		}
-		return null;
+	public List<Product> getUserProducts( @RequestAttribute("toto") String myAttribute){
+		
+		System.out.println(myAttribute);
+		
+		return null;//securityUtil.getUserFromToken(token).getProducts();
 	}
 	
 	//    La route POST permet d'ajouter un produit à votre liste
 	@PostMapping("/product")
 	public Product addUserProducts(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token, @RequestBody Product product ) {
-		if (securityUtil.isValidToken(token) && securityUtil.canAcces(token, "USER")) {
-			Users u = securityUtil.getUserFromToken(token);
-			if (u != null) {
-				pRepo.save(product);
-				u.getProducts().add(product);
-				uRepo.save(u);
-				return product;
-			}
+		Users u = securityUtil.getUserFromToken(token);
+		if (u != null) {
+			pRepo.save(product);
+			u.getProducts().add(product);
+			uRepo.save(u);
+			return product;
 		}
 		return null;
 	}
@@ -78,23 +72,18 @@ public class UserController {
 	@PutMapping
 	public Users updateUser(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token,@RequestBody Users u) {
 		
-		if (securityUtil.isValidToken(token) && 
-				(securityUtil.canAcces(token, "USER") || 
-				 securityUtil.canAcces(token, "ADMIN")
-		    )) {
+		Users user = securityUtil.getUserFromToken(token);
+		
+		if (user != null) {
+			user.setEmail( u.getEmail() );
+			user.setFirstName( u.getFirstName());
+			user.setLastName( u.getLastName());
+			user.setPassword( securityUtil.encodePassword( u.getPassword() )   );
 			
-			Users user = securityUtil.getUserFromToken(token);
-			
-			if (user != null) {
-				user.setEmail( u.getEmail() );
-				user.setFirstName( u.getFirstName());
-				user.setLastName( u.getLastName());
-				user.setPassword( securityUtil.encodePassword( u.getPassword() )   );
-				
-				uRepo.save(user);
-				return u;
-			}
+			uRepo.save(user);
+			return u;
 		}
+		
 
 		return null;
 	}
@@ -103,26 +92,11 @@ public class UserController {
 	@DeleteMapping
 	public boolean deleteUser(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 		
-		if(securityUtil.isValidToken(token) && securityUtil.canAcces(token, "USER")) {
-			Users u = securityUtil.getUserFromToken(token);
-			if (u != null) {
-				uRepo.delete(u);
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	
-	@GetMapping("/admintest")
-	public boolean isAdmin(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-	
-		if ( securityUtil.isValidToken(token) && securityUtil.canAcces(token, "ADMIN")) {
+		Users u = securityUtil.getUserFromToken(token);
+		if (u != null) {
+			uRepo.delete(u);
 			return true;
 		}
 		return false;
-		
-	}
-	
-	
+	}	
 }
